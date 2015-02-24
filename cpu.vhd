@@ -51,12 +51,12 @@ signal reg_r_data_a : 	std_ulogic_vector(7 downto 0) := (others => '0');
 signal reg_r_data_b : 	std_ulogic_vector(7 downto 0) := (others => '0');
 signal reg_w_data : 		std_ulogic_vector(7 downto 0) := (others => '0');
 
-signal alu_mode : 			std_ulogic_vector(2 downto 0) := (others => '0');
-signal in_a : 					std_ulogic_vector(7 downto 0) := (others => '0');
-signal in_b : 					std_ulogic_vector(7 downto 0) := (others => '0');
-signal result : 				std_ulogic_vector(7 downto 0);
-signal n : 							std_ulogic;
-signal z : 							std_ulogic;
+signal alu_alu_mode : 			std_ulogic_vector(2 downto 0) := (others => '0');
+signal alu_in_a : 					std_ulogic_vector(7 downto 0) := (others => '0');
+signal alu_in_b : 					std_ulogic_vector(7 downto 0) := (others => '0');
+signal alu_result : 				std_ulogic_vector(7 downto 0);
+signal alu_n : 							std_ulogic;
+signal alu_z : 							std_ulogic;
 -- fetch-decode nonarchitectural registers
 signal ifid_instr : 		std_ulogic_vector(7 downto 0);
 -- decode-execute nonarchitectural registers
@@ -72,13 +72,14 @@ begin
   -- entity declarations for instantiations
   rom : 		entity work.imem port map(clk, pc, ifid_instr);
   regfile : entity work.register_file port map(clk, rst, reg_r_index_a, reg_r_index_b, reg_wr_index, reg_w_en, reg_r_data_a, reg_r_data_b, reg_w_data);
-	alu : 		entity work.alu port map(clk, rst, alu_mode, in_a, in_b, result, n, z);
-  datapath: process(clk)
+	alu : 		entity work.alu port map(clk, rst, alu_alu_mode, alu_in_a, alu_in_b, alu_result, alu_n, alu_z);
+	
+ datapath: process(clk)
   begin
     if rising_edge(clk) then
       
     end if;
-  end process;
+ end process;
 
 ctrlpath: process(clk)
   begin
@@ -100,16 +101,26 @@ ctrlpath: process(clk)
 						idex_opcode = "0101" or 
 						idex_opcode = "0110" then
 				-- alu_code = opcode, in_a = rega, in_b = regb
+				-- Get data from reg file
+				reg_r_index_a <= idex_rega;
+				reg_r_index_b <= idex_regb;
+				-- put data into alu and calc
+				alu_in_a <= reg_r_data_a;
+				alu_in_b <= reg_r_data_b;
+				alu_alu_mode <= idex_opcode(2 downto 0);
+				-- write data back into rega
+				reg_wr_index <= idex_rega;
+				reg_w_data <= alu_result;
+				reg_w_en <= '1';
+				
 			elsif idex_opcode = "1011" or 
 						idex_opcode = "1100" or 
 						idex_opcode = "1101" then
 				-- we moving shit in the registers, probs have to break up this into parts
 			elsif idex_opcode = "0000" then
-				-- do nothing, NOP up in this bizatch!
+				-- NOP up in this bizatch!
 			end if;
-      -- mem
-
-      -- writeback
+ 
 
       end if;
     end if;
