@@ -47,9 +47,15 @@ signal pc :             std_ulogic_vector(6 downto 0) := (others => '0'); -- ROM
   -- Outputs
 signal romData :        std_ulogic_vector(7 downto 0) := (others => '0'); -- Instruction from ROM
 -- romData breakdown signals
+<<<<<<< HEAD
 signal opcode:          std_ulogic_vector(3 downto 0) := (others => '0');
 signal registerA :      std_ulogic_vector(1 downto 0) := (others => '0');
 signal registerB :      std_ulogic_vector(1 downto 0) := (others => '0');
+=======
+signal opcode:          std_ulogic_vector(3 downto 0);
+signal registerA :      std_ulogic_vector(1 downto 0);
+signal registerB :      std_ulogic_vector(1 downto 0);
+>>>>>>> 9eac03b4db9fba608f61e08336afc53be3fcc5c7
 -- Register signals
   -- Inputs
 signal regReadIndexA :  std_ulogic_vector(1 downto 0) := (others => '0');
@@ -62,22 +68,28 @@ signal regReadDataA : 	std_ulogic_vector(7 downto 0) := (others => '0');
 signal regReadDataB : 	std_ulogic_vector(7 downto 0) := (others => '0');
 -- ALU signals
   -- Inputs
-signal aluMode : 	      std_ulogic_vector(3 downto 0) := (others => '0');
-signal aluInputA : 			std_ulogic_vector(7 downto 0) := (others => '0');
-signal aluInputB : 			std_ulogic_vector(7 downto 0) := (others => '0');
+signal aluMode : 	std_ulogic_vector(3 downto 0) := (others => '0');
+signal aluInputA : 	std_ulogic_vector(7 downto 0) := (others => '0');
+signal aluInputB : 	std_ulogic_vector(7 downto 0) := (others => '0');
   -- Outputs
+<<<<<<< HEAD
 signal aluResult : 		  std_ulogic_vector(7 downto 0) := (others => '0');
 signal aluNegative : 		std_ulogic := '0';
 signal aluZero : 				std_ulogic := '0';
 
 signal writeRequestAlu : std_ulogic := '0';
+=======
+signal aluResult : 	std_ulogic_vector(7 downto 0);
+signal aluNegative : 	std_ulogic;
+signal aluZero : 	std_ulogic;
+>>>>>>> 9eac03b4db9fba608f61e08336afc53be3fcc5c7
 
 begin
 
   -- entity declarations for instantiations
   rom : 		entity work.imem port map(clk, pc, romData);
   regfile : entity work.register_file port map(clk, rst, regReadIndexA, regReadIndexB, regWriteIndex, regWriteEnable, regWriteData, regReadDataA, regReadDataB);
-	alu : 		entity work.alu port map(clk, rst, aluMode, aluInputA, aluInputB, aluResult, aluNegative, aluZero);
+  alu : 		entity work.alu port map(clk, rst, aluMode, aluInputA, aluInputB, aluResult, aluNegative, aluZero);
 	
  datapath: process(clk)
   begin
