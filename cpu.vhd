@@ -47,15 +47,10 @@ signal pc :             std_ulogic_vector(6 downto 0) := (others => '0'); -- ROM
   -- Outputs
 signal romData :        std_ulogic_vector(7 downto 0) := (others => '0'); -- Instruction from ROM
 -- romData breakdown signals
-<<<<<<< HEAD
 signal opcode:          std_ulogic_vector(3 downto 0) := (others => '0');
 signal registerA :      std_ulogic_vector(1 downto 0) := (others => '0');
 signal registerB :      std_ulogic_vector(1 downto 0) := (others => '0');
-=======
-signal opcode:          std_ulogic_vector(3 downto 0);
-signal registerA :      std_ulogic_vector(1 downto 0);
-signal registerB :      std_ulogic_vector(1 downto 0);
->>>>>>> 9eac03b4db9fba608f61e08336afc53be3fcc5c7
+
 -- Register signals
   -- Inputs
 signal regReadIndexA :  std_ulogic_vector(1 downto 0) := (others => '0');
@@ -72,17 +67,12 @@ signal aluMode : 	std_ulogic_vector(3 downto 0) := (others => '0');
 signal aluInputA : 	std_ulogic_vector(7 downto 0) := (others => '0');
 signal aluInputB : 	std_ulogic_vector(7 downto 0) := (others => '0');
   -- Outputs
-<<<<<<< HEAD
 signal aluResult : 		  std_ulogic_vector(7 downto 0) := (others => '0');
 signal aluNegative : 		std_ulogic := '0';
 signal aluZero : 				std_ulogic := '0';
-
+-- Misc
 signal writeRequestAlu : std_ulogic := '0';
-=======
-signal aluResult : 	std_ulogic_vector(7 downto 0);
-signal aluNegative : 	std_ulogic;
-signal aluZero : 	std_ulogic;
->>>>>>> 9eac03b4db9fba608f61e08336afc53be3fcc5c7
+
 
 begin
 
