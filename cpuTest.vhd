@@ -41,19 +41,19 @@ ARCHITECTURE behavior OF cpuTest IS
  
     COMPONENT cpu
     PORT(
-         clk : IN  std_ulogic;
-         rst : IN  std_ulogic;
-         int : IN  std_ulogic;
-         in_port : IN  std_ulogic_vector(7 downto 0);
+         clk :      IN  std_ulogic;
+         rst :      IN  std_ulogic;
+         int :      IN  std_ulogic;
+         in_port :  IN  std_ulogic_vector(7 downto 0);
          out_port : OUT  std_ulogic_vector(7 downto 0)
         );
     END COMPONENT;
     
 
    --Inputs
-   signal clk : std_ulogic := '0';
-   signal rst : std_ulogic := '0';
-   signal int : std_ulogic := '0';
+   signal clk :     std_ulogic := '0';
+   signal rst :     std_ulogic := '0';
+   signal int :     std_ulogic := '0';
    signal in_port : std_ulogic_vector(7 downto 0) := (others => '0');
 
  	--Outputs

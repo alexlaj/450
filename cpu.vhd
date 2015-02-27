@@ -63,13 +63,13 @@ signal regReadDataA : 	std_ulogic_vector(7 downto 0) := (others => '0');
 signal regReadDataB : 	std_ulogic_vector(7 downto 0) := (others => '0');
 -- ALU signals
   -- Inputs
-signal aluMode : 	std_ulogic_vector(3 downto 0) := (others => '0');
-signal aluInputA : 	std_ulogic_vector(7 downto 0) := (others => '0');
-signal aluInputB : 	std_ulogic_vector(7 downto 0) := (others => '0');
+signal aluMode :        std_ulogic_vector(3 downto 0) := (others => '0');
+signal aluInputA :      std_ulogic_vector(7 downto 0) := (others => '0');
+signal aluInputB :      std_ulogic_vector(7 downto 0) := (others => '0');
   -- Outputs
-signal aluResult : 		  std_ulogic_vector(7 downto 0) := (others => '0');
-signal aluNegative : 		std_ulogic := '0';
-signal aluZero : 				std_ulogic := '0';
+signal aluResult :      std_ulogic_vector(7 downto 0) := (others => '0');
+signal aluNegative :    std_ulogic := '0';
+signal aluZero :        std_ulogic := '0';
 -- Misc
 signal writeRequestAlu : std_ulogic := '0';
 
