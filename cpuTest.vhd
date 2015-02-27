@@ -41,23 +41,23 @@ ARCHITECTURE behavior OF cpuTest IS
  
     COMPONENT cpu
     PORT(
-         clk : IN  std_logic;
-         rst : IN  std_logic;
-         int : IN  std_logic;
-         in_port : IN  std_logic_vector(7 downto 0);
-         out_port : OUT  std_logic_vector(7 downto 0)
+         clk : IN  std_ulogic;
+         rst : IN  std_ulogic;
+         int : IN  std_ulogic;
+         in_port : IN  std_ulogic_vector(7 downto 0);
+         out_port : OUT  std_ulogic_vector(7 downto 0)
         );
     END COMPONENT;
     
 
    --Inputs
-   signal clk : std_logic := '0';
-   signal rst : std_logic := '0';
-   signal int : std_logic := '0';
-   signal in_port : std_logic_vector(7 downto 0) := (others => '0');
+   signal clk : std_ulogic := '0';
+   signal rst : std_ulogic := '0';
+   signal int : std_ulogic := '0';
+   signal in_port : std_ulogic_vector(7 downto 0) := (others => '0');
 
  	--Outputs
-   signal out_port : std_logic_vector(7 downto 0);
+   signal out_port : std_ulogic_vector(7 downto 0);
 
    -- Clock period definitions
    constant clk_period : time := 10 ns;
@@ -87,12 +87,12 @@ BEGIN
    stim_proc: process
    begin		
       -- hold reset state for 100 ns.
-      wait for 100 ns;	
+      -- wait for 100 ns;	
 
-      wait for clk_period*10;
+      -- wait for clk_period*2;
 
       -- insert stimulus here 
-
+      in_port <= "00000010";
       wait;
    end process;
 
