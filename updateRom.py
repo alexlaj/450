@@ -44,7 +44,7 @@ for line in txtIns:
 	if pad:
 		tmpIns += '00'
 		pad = False
-	binIns.append('"'+tmpIns+'",\n')
+	binIns.append('"'+tmpIns+'",    --'+line+'\n')
 # Open file to write to
 for i in binIns:
 	imem = imem + i
