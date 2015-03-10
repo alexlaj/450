@@ -92,9 +92,11 @@ BEGIN
       -- wait for clk_period*2;
 
       -- insert stimulus here 
-      in_port <= "00000010";
-      wait for clk_period*10;
+      
+      
       rst <= '1';
+      wait for clk_period*3;
+      in_port <= "00000010";
    end process;
 
 END;

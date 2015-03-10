@@ -43,6 +43,16 @@
       <obj_property name="ObjectShortName">opcode[3:0]</obj_property>
       <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
+   <wvobject fp_name="/cputest/uut/operanda" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">operanda[1:0]</obj_property>
+      <obj_property name="ObjectShortName">operanda[1:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/operandb" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">operandb[1:0]</obj_property>
+      <obj_property name="ObjectShortName">operandb[1:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
    <wvobject fp_name="/cputest/uut/alu/alu_mode" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">alu_mode[3:0]</obj_property>
       <obj_property name="ObjectShortName">alu_mode[3:0]</obj_property>
@@ -62,14 +72,6 @@
       <obj_property name="ElementShortName">result[7:0]</obj_property>
       <obj_property name="ObjectShortName">result[7:0]</obj_property>
       <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cputest/uut/registera" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">registera[1:0]</obj_property>
-      <obj_property name="ObjectShortName">registera[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cputest/uut/registerb" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">registerb[1:0]</obj_property>
-      <obj_property name="ObjectShortName">registerb[1:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/cputest/uut/regwriteindex" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regwriteindex[1:0]</obj_property>
