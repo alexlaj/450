@@ -53,6 +53,7 @@ signal registerB :      std_ulogic_vector(1 downto 0) := (others => '0');
 
 -- Register signals
   -- Inputs
+signal regRst :         std_ulogic := '0';
 signal regReadIndexA :  std_ulogic_vector(1 downto 0) := (others => '0');
 signal regReadIndexB : 	std_ulogic_vector(1 downto 0) := (others => '0');
 signal regWriteIndex : 	std_ulogic_vector(1 downto 0) := (others => '0');
@@ -63,6 +64,7 @@ signal regReadDataA : 	std_ulogic_vector(7 downto 0) := (others => '0');
 signal regReadDataB : 	std_ulogic_vector(7 downto 0) := (others => '0');
 -- ALU signals
   -- Inputs
+signal aluRst :         std_ulogic := '0';
 signal aluMode :        std_ulogic_vector(3 downto 0) := (others => '0');
 signal aluInputA :      std_ulogic_vector(7 downto 0) := (others => '0');
 signal aluInputB :      std_ulogic_vector(7 downto 0) := (others => '0');
@@ -70,16 +72,16 @@ signal aluInputB :      std_ulogic_vector(7 downto 0) := (others => '0');
 signal aluResult :      std_ulogic_vector(7 downto 0) := (others => '0');
 signal aluNegative :    std_ulogic := '0';
 signal aluZero :        std_ulogic := '0';
--- Misc
+-- ALU Writeback
 signal writeRequestAlu : std_ulogic := '0';
-
+signal writeAluRegister : std_ulogic_vector(1 downto 0) := (others => '0');
 
 begin
 
   -- entity declarations for instantiations
   rom : 		entity work.imem port map(clk, pc, romData);
-  regfile : entity work.register_file port map(clk, rst, regReadIndexA, regReadIndexB, regWriteIndex, regWriteEnable, regWriteData, regReadDataA, regReadDataB);
-  alu : 		entity work.alu port map(clk, rst, aluMode, aluInputA, aluInputB, aluResult, aluNegative, aluZero);
+  regfile : entity work.register_file port map(clk, regRst, regReadIndexA, regReadIndexB, regWriteIndex, regWriteEnable, regWriteData, regReadDataA, regReadDataB);
+  alu : 		entity work.alu port map(clk, aluRst, aluMode, aluInputA, aluInputB, aluResult, aluNegative, aluZero);
 	
  datapath: process(clk)
   begin
@@ -88,27 +90,43 @@ begin
         if rst = '1' then
           -- Reset system
           pc <= "0000000";
-          -- Still need to reset ROM, regfile
+          out_port <= "00000000";
+          regRst <= '1';
+          aluRst <= '1';
+          opcode <= "0000";
+          registerA <= "00";
+          registerB <= "00";
+          regReadIndexA <= "00";
+          regReadIndexB <= "00";
+          regWriteIndex <= "00";
+          regWriteEnable <= '0';
+          regWriteData <= "00000000";
+          aluMode <= "0000";
+          aluInputA <= "00000000";
+          aluInputB <= "00000000";
+          writeRequestAlu <= '0';
+          writeAluRegister <= "00";
         else
           -- Clear write enable so it's only on for one clock cycle
           regWriteEnable <= '0';
           -- Increment PC by 1 (convert logic vector and int to unsigned, add, then result to logic vector)
-          pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,1));
-          opcode <= romData(7 downto 4);
-          registerA <= romData(3 downto 2);
-          registerB <= romData(1 downto 0);
+          pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,1)); --1
+          opcode <= romData(7 downto 4); --2
+          registerA <= romData(3 downto 2); --2
+          registerB <= romData(1 downto 0); --2
           -- Check for ALU instructions that use two registers (add 0100, sub 0101, nand 1000, shift left 0110, shift right 0111)
           if opcode = "0100" or opcode = "0101" or opcode = "1000" or opcode = "0110" or opcode = "0111" then
             -- Get the data from the registers
-            regReadIndexA <= registerA;
-            regReadIndexB <= registerB;
+            regReadIndexA <= registerA; --3
+            regReadIndexB <= registerB; --3
             -- Put the register data in the ALU inputs
-            aluInputA <= regReadDataA;
-            aluInputB <= regReadDataB;
+            aluInputA <= regReadDataA; --4
+            aluInputB <= regReadDataB; --4
             -- Set the ALU mode
-            aluMode <= opcode;
+            aluMode <= opcode; --4
             -- Request writeback for the ALU 
-            writeRequestAlu <= '1';
+            writeRequestAlu <= '1'; --4
+            writeAluRegister <= registerA; --4
             
           -- Read data in from IN.PORT (external)
           elsif opcode = "1011" then
@@ -134,10 +152,10 @@ begin
           end if;
           -- Writeback for the ALU, clear request line
           if writeRequestAlu = '1' then
-            regWriteIndex <= registerA;
-            regWriteData <= aluResult;
-            regWriteEnable <= '1';
-            writeRequestAlu <= '0';
+            regWriteIndex <= writeAluRegister; --5
+            regWriteData <= aluResult; --5
+            regWriteEnable <= '1'; --5
+            writeRequestAlu <= '0'; --5
           end if;
         end if;
       end if;      

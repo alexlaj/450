@@ -12,7 +12,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="18" />
+   <WVObjectSize size="19" />
    <wvobject fp_name="/cputest/clk" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -32,6 +32,7 @@
    <wvobject fp_name="/cputest/out_port" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">out_port[7:0]</obj_property>
       <obj_property name="ObjectShortName">out_port[7:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/cputest/uut/romdata" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">romdata[7:0]</obj_property>
@@ -82,12 +83,19 @@
       <obj_property name="ElementShortName">regwriteenable</obj_property>
       <obj_property name="ObjectShortName">regwriteenable</obj_property>
    </wvobject>
-   <wvobject fp_name="/cputest/uut/regfile/regfile[0]" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">[0]</obj_property>
-      <obj_property name="ObjectShortName">regfile[0]</obj_property>
+   <wvobject fp_name="/cputest/uut/regfile/regfile" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">regfile[0:3]</obj_property>
+      <obj_property name="ObjectShortName">regfile[0:3]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/cputest/uut/regfile/regfile[1]" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">[1]</obj_property>
-      <obj_property name="ObjectShortName">regfile[1]</obj_property>
+   <wvobject fp_name="/cputest/uut/regreadindexa" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">regreadindexa[1:0]</obj_property>
+      <obj_property name="ObjectShortName">regreadindexa[1:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/regreadindexb" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">regreadindexb[1:0]</obj_property>
+      <obj_property name="ObjectShortName">regreadindexb[1:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
 </wave_config>
