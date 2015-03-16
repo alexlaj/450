@@ -73,10 +73,15 @@ signal aluResult :      std_ulogic_vector(7 downto 0) := (others => '0');
 signal aluNegative :    std_ulogic := '0';
 signal aluZero :        std_ulogic := '0';
 -- ALU Writeback
+signal operandsReady : std_ulogic := '0';
 signal writeRequestAlu : std_ulogic := '0';
 signal writeAluRegister : std_ulogic_vector(1 downto 0) := (others => '0');
--- Branching
-signal LR :             std_ulogic_vector(7 downto 0) := (others => '0');
+-- Branch handling
+signal LR :             std_ulogic_vector(6 downto 0) := (others => '0');
+signal pcBranch :   std_ulogic := '0';
+signal subFlag : std_ulogic := '0';
+signal writeOutPort : std_ulogic := '0';
+
 begin
 
   -- entity declarations for instantiations
@@ -86,7 +91,6 @@ begin
 	
  datapath: process(clk)
   begin
-    if rising_edge(clk) then
       if rising_edge(clk) then
         if rst = '1' then
           -- Reset system
@@ -111,73 +115,91 @@ begin
           -- Clear write enable so it's only on for one clock cycle
           regWriteEnable <= '0';
           -- Increment PC by 1 (convert logic vector and int to unsigned, add, then result to logic vector)
-          pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,1)); --1
-          opcode <= romData(7 downto 4); --2
-          operandA <= romData(3 downto 2); --2
-          operandB <= romData(1 downto 0); --2
+          if pcBranch = '1' then
+            pc <= regReadDataA(6 downto 0);
+            pcBranch <= '0';
+          else
+            pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,1));
+          end if;
+          opcode <= romData(7 downto 4);
+          operandA <= romData(3 downto 2);
+          operandB <= romData(1 downto 0);
+          
+          -- Check for return
+          if opcode = "1110" and subFlag = '1' then
+            pc <= LR;
+            subFlag <= '0';
           -- Check for branching
-          if opcode = "1001" then
+          elsif opcode = "1001" then
             -- Branch to operandB
-            if (operandA = "00") or (operandA = "01" and aluZero = '1') or operandA = "10" and aluNegative = '1') then
+            if (operandA = "00") or (operandA = "01" and aluZero = '1') or (operandA = "10" and aluNegative = '1') then
               regReadIndexA <= operandB;
-              pc <= regReadDataA;
-            -- Branch to subroutine (operandA = "11")
+              pcBranch <= '1';              
+            -- Branch to subroutine at operandB
             elsif operandA = "11" then
               LR <= PC;
+              subFlag <= '1';
+              regReadIndexA <= operandB;
+              pcBranch <= '1';
             end if;
-          -- Return
-          elsif opcode = "1110" then
-            pc <= LR;
-          end if;
+          else  
+            -- Check for ALU instructions that use two registers (add 0100, sub 0101, nand 1000, shift left 0110, shift right 0111)
+            if opcode = "0100" or opcode = "0101" or opcode = "1000" or opcode = "0110" or opcode = "0111" then
+              -- Get the data from the registers
+              regReadIndexA <= operandA;
+              regReadIndexB <= operandB;
+              writeAluRegister <= operandA;
+              operandsReady <= '1';
+              aluMode <= opcode;
               
-          end if;
-          -- Check for ALU instructions that use two registers (add 0100, sub 0101, nand 1000, shift left 0110, shift right 0111)
-          elsif opcode = "0100" or opcode = "0101" or opcode = "1000" or opcode = "0110" or opcode = "0111" then
-            -- Get the data from the registers
-            regReadIndexA <= operandA; --3
-            regReadIndexB <= operandB; --3
-            -- Put the register data in the ALU inputs
-            aluInputA <= regReadDataA; --4
-            aluInputB <= regReadDataB; --4
-            -- Set the ALU mode
-            aluMode <= opcode; --4
-            -- Request writeback for the ALU 
-            writeRequestAlu <= '1'; --4
-            writeAluRegister <= operandA; --4
+            -- Read data in from IN.PORT (external)
+            elsif opcode = "1011" then
+              -- Write back data to the first register
+              regWriteIndex <= operandA;
+              regWriteData <= in_port;
+              regWriteEnable <= '1';            
+              
+            -- Write data to OUT.PORT (external)
+            elsif opcode = "1100" then
+
+              -- Get data from the first register and dump it in the outport
+              regReadIndexA <= operandA;
+              writeOutPort <= '1';            
             
-          -- Read data in from IN.PORT (external)
-          elsif opcode = "1011" then
-            -- Write back data to the first register
-            regWriteIndex <= operandA;
-            regWriteData <= in_port;
-            regWriteEnable <= '1';            
+            -- Move data from one register to another
+            elsif opcode = "1101" then
+              -- Read data from 2nd register
+              regReadIndexA <= operandB;
+              -- Write to first register
+              regWriteIndex <= operandA;
+              regWriteData <= regReadDataA;
+              regWriteEnable <= '1';            
+            end if;
             
-          -- Write data to OUT.PORT (external)
-          elsif opcode = "1100" then
-            -- Get data from the first register and dump it in the outport
-            regReadIndexA <= operandA;
-            out_port <= regReadDataA;
-          
-          -- Move data from one register to another
-          elsif opcode = "1101" then
-            -- Read data from 2nd register
-            regReadIndexA <= operandB;
-            -- Write to first register
-            regWriteIndex <= operandA;
-            regWriteData <= regReadDataA;
-            regWriteEnable <= '1';            
+            -- If the data from the registers is ready to send to ALU
+            if operandsReady = '1' then
+              -- Put the register data in the ALU inputs
+              aluInputA <= regReadDataA;
+              aluInputB <= regReadDataB;
+              -- Request writeback for the ALU 
+              writeRequestAlu <= '1';
+              operandsReady <= '0';
+              
+            -- Writeback for the ALU, clear request line
+            elsif writeRequestAlu = '1' then
+              regWriteIndex <= writeAluRegister;
+              regWriteData <= aluResult;
+              regWriteEnable <= '1';
+              writeRequestAlu <= '0';
+              -- Write for outport if the operands are ready
+            elsif writeOutPort = '1' then
+                out_port <= regReadDataA;
+                writeOutPort <= '0';
+              
+            end if;
           end if;
-          -- Writeback for the ALU, clear request line
-          if writeRequestAlu = '1' then
-            regWriteIndex <= writeAluRegister; --5
-            regWriteData <= aluResult; --5
-            regWriteEnable <= '1'; --5
-            writeRequestAlu <= '0'; --5
-          end if;
-        end if;
-      end if;      
+        end if;      
     end if;
  end process;
 
 end Behavioral;
-
