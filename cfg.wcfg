@@ -12,7 +12,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="19" />
+   <WVObjectSize size="28" />
    <wvobject fp_name="/cputest/clk" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -28,6 +28,7 @@
    <wvobject fp_name="/cputest/in_port" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">in_port[7:0]</obj_property>
       <obj_property name="ObjectShortName">in_port[7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/cputest/out_port" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">out_port[7:0]</obj_property>
@@ -63,14 +64,6 @@
       <obj_property name="ObjectShortName">result[7:0]</obj_property>
       <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/cputest/uut/registera" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">registera[1:0]</obj_property>
-      <obj_property name="ObjectShortName">registera[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cputest/uut/registerb" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">registerb[1:0]</obj_property>
-      <obj_property name="ObjectShortName">registerb[1:0]</obj_property>
-   </wvobject>
    <wvobject fp_name="/cputest/uut/regwriteindex" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regwriteindex[1:0]</obj_property>
       <obj_property name="ObjectShortName">regwriteindex[1:0]</obj_property>
@@ -97,5 +90,52 @@
       <obj_property name="ElementShortName">regreadindexb[1:0]</obj_property>
       <obj_property name="ObjectShortName">regreadindexb[1:0]</obj_property>
       <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/regfile/rd_data_a" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">rd_data_a[7:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_data_a[7:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/regfile/rd_data_b" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">rd_data_b[7:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_data_b[7:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/pc" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pc[6:0]</obj_property>
+      <obj_property name="ObjectShortName">pc[6:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/operandsready" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">operandsready</obj_property>
+      <obj_property name="ObjectShortName">operandsready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/operanda" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">operanda[1:0]</obj_property>
+      <obj_property name="ObjectShortName">operanda[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/operandb" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">operandb[1:0]</obj_property>
+      <obj_property name="ObjectShortName">operandb[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/writeoutport" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">writeoutport</obj_property>
+      <obj_property name="ObjectShortName">writeoutport</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/alu/n" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">n</obj_property>
+      <obj_property name="ObjectShortName">n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/alu/z" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">z</obj_property>
+      <obj_property name="ObjectShortName">z</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/lr" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">lr[6:0]</obj_property>
+      <obj_property name="ObjectShortName">lr[6:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/subflag" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">subflag</obj_property>
+      <obj_property name="ObjectShortName">subflag</obj_property>
    </wvobject>
 </wave_config>

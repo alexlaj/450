@@ -55,8 +55,8 @@ begin
           when "0100" => res := std_ulogic_vector(signed(in_a) + signed(in_b));
           when "0101" => res := std_ulogic_vector(signed(in_a) - signed(in_b));
           when "0110" => res := in_a nand in_b;
-          when "0111" => res := std_ulogic_vector(shift_right(signed(in_a),to_integer(signed(in_b))));
-          when "1000" => res := std_ulogic_vector(shift_left(signed(in_a),to_integer(signed(in_b))));
+          when "0111" => res := std_ulogic_vector(shift_right(signed(in_a),1));
+          when "1000" => res := std_ulogic_vector(shift_left(signed(in_a),1));
           when others => res := "XXXXXXXX";
         end case;
         if (to_integer(signed(res)) < 0) then

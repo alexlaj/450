@@ -9,12 +9,17 @@ finalOutputFile = 'imem.vhd'
 insToBin = {'NOP': '00000000',
 			'ADD': '0100',
 			'SUB': '0101',
-			'SHL': '0110',
+			'SHL': '1000',
 			'SHR': '0111',
-			'NAND':'1000',
+			'NAND':'0110',
 			'IN' : '1011',
 			'OUT': '1100',
 			'MOV': '1101',
+			'BR' : '100100',
+			'BR.Z':'100101',
+			'BR.N':'100110',
+			'BR.SUB':'100111',
+			'RETURN':'11100000',
 			'R0' : '00',
 			'R1' : '01',
 			'R2' : '10',
@@ -39,7 +44,7 @@ for line in txtIns:
 	tmpIns = ''
 	for i in splitIns:
 		tmpIns += insToBin[i]
-		if i == 'IN' or i == 'OUT':
+		if i == 'IN' or i == 'OUT' or i == 'SHL' or i == 'SHR':
 			pad = True
 	if pad:
 		tmpIns += '00'
