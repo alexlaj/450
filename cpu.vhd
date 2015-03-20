@@ -58,7 +58,7 @@ signal subFlag : std_ulogic := '0';
 
 begin
 
-  -- entity declarations for instantiations
+-- entity declarations for instantiations
 rom : entity work.imem port map(clk, pc, romData);
 regfile : entity work.register_file port map(clk, regRst, regReadIndexA, regReadIndexB, regWriteIndex, regWriteEnable, regWriteData, regReadDataA, regReadDataB);
 alu : entity work.alu port map(clk, aluRst, aluMode, aluInputA, aluInputB, aluResult, aluNegative, aluZero);
@@ -88,16 +88,16 @@ datapath: process(clk)
 			else
 				-- Clear write enable so it's only on for one clock cycle
 				regWriteEnable <= '0';
-
+				-- Clear loadImmNext so it's only on for one clock cycle
+				loadImmNext <= '0';
 				-- Writeback for the ALU, clear request line
 				if writeRequestAlu = '1' then
 					regWriteIndex <= writeAluRegister;
 					regWriteData <= aluResult;
 					regWriteEnable <= '1';
-					writeRequestAlu <= '0';
+					writeRequestAlu <= '0';				
 				end if;
-
-				-- Increment PC by 1 (convert logic vector and int to unsigned, add, then result to logic vector)
+				-- Increment PC, check for branch first
 				if pcBranch = '1' then
 					pc <= regReadDataB(6 downto 0);
 					pcBranch <= '0';
@@ -105,10 +105,16 @@ datapath: process(clk)
 					pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,1));
 				end if;
 
-				-- Split instruction up for readability
-				opcode <= romData(7 downto 4);
-				operandA <= romData(3 downto 2);
-				operandB <= romData(1 downto 0);
+				-- If last ins was a loadimm then we need to NOP for a cycle
+				if opcode = "0011" then
+					opcode <= "0000";
+					operandA <= "00";
+					operandB <= "00";
+				else
+					opcode <= romData(7 downto 4);
+					operandA <= romData(3 downto 2);
+					operandB <= romData(1 downto 0);
+				end if;
 
 				-- Being greedy here. Register file will be accessed every clock cycle. It will not always be needed.
 				-- Advantage is that values are always ready for reading when needed, don't have to wait a clock cycle.
@@ -119,10 +125,9 @@ datapath: process(clk)
 				if opcode = "1110" and subFlag = '1' then
 					pc <= LR;
 					subFlag <= '0';
-
 				-- Branching
 				elsif opcode = "1001" then
-				-- Branch to operandB
+					-- Branch to operandB
 					if (operandA = "00") or (operandA = "01" and aluZero = '1') or (operandA = "10" and aluNegative = '1') then
 						pc <= regReadDataB(6 downto 0);             
 					-- Branch to subroutine at operandB
@@ -131,34 +136,34 @@ datapath: process(clk)
 						subFlag <= '1';
 						pc <= regReadDataB(6 downto 0);
 					end if;
-
 				-- ALU instructions that use two registers
-				-- (add 0100, sub 0101, nand 1000, shift left 0110, shift right 0111)
-				elsif opcode = "0100" or opcode = "0101" or opcode = "1000" or opcode = "0110" or opcode = "0111" then
+				-- (add 0100, sub 0101, shift left 0110, shift right 0111, nand 1000)
+				elsif opcode = "0100" or opcode = "0101" or opcode = "0110" or opcode = "0111" or opcode = "1000" then
 					writeAluRegister <= operandA;
 					aluMode <= opcode;
 					-- Put the register data in the ALU inputs
 					aluInputA <= regReadDataA;
 					aluInputB <= regReadDataB;
 					-- Request writeback for the ALU 
-					writeRequestAlu <= '1';              
-              
+					writeRequestAlu <= '1';                            
 				-- Read data in from IN.PORT (external)
 				elsif opcode = "1011" then
 					-- Write back data to the first register
 					regWriteIndex <= operandA;
 					regWriteData <= in_port;
-					regWriteEnable <= '1';            
-              
+					regWriteEnable <= '1';                          
 				-- Write data to OUT.PORT (external)
 				elsif opcode = "1100" then
-					out_port <= regReadDataA;           
-            
+					out_port <= regReadDataA;                       
 				-- Move data from one register to another
 				elsif opcode = "1101" then
-					-- Write to first register
 					regWriteIndex <= operandA;
 					regWriteData <= regReadDataA;
+					regWriteEnable <= '1';
+				-- Load immediate
+				elsif opcode = "0011" then
+					regWriteIndex <= operandA;
+					regWriteData <= romData;
 					regWriteEnable <= '1';            
 				end if;
 			end if;      
