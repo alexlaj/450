@@ -51,17 +51,34 @@ signal aluZero : std_ulogic := '0';
 signal writeRequestAlu : std_ulogic := '0';
 signal writeAluRegister : std_ulogic_vector(1 downto 0) := (others => '0');
 
+-- RAM signals
+  -- Inputs
+signal ramReadAddr : std_ulogic_vector(6 downto 0) := (others => '0');
+signal ramWriteAddr : std_ulogic_vector(6 downto 0) := (others => '0');
+signal ramWriteEnable : std_ulogic := '0';
+signal ramInputData : std_ulogic_vector(7 downto 0) := (others => '0');
+signal ramReadRequest : std_ulogic := '0';
+  -- Outputs
+signal ramOutputData : std_ulogic_vector(7 downto 0) := (others => '0');
+signal ramDataReady : std_ulogic := '0';
+
 -- Branch handling
 signal LR : std_ulogic_vector(6 downto 0) := (others => '0');
 signal pcBranch : std_ulogic := '0';
 signal subFlag : std_ulogic := '0';
 
+signal loadToReg : std_ulogic := '0';
+signal loadTarget : std_ulogic_vector(1 downto 0) := (others => '0');
+
+signal storeAddress : std_ulogic_vector(6 downto 0) := (others => '0');
+signal storeToMem : std_ulogic := '0';
 begin
 
 -- entity declarations for instantiations
 rom : entity work.imem port map(clk, pc, romData);
 regfile : entity work.register_file port map(clk, regRst, regReadIndexA, regReadIndexB, regWriteIndex, regWriteEnable, regWriteData, regReadDataA, regReadDataB);
 alu : entity work.alu port map(clk, aluRst, aluMode, aluInputA, aluInputB, aluResult, aluNegative, aluZero);
+ram : entity work.ram port map(clk, ramReadAddr, ramWriteAddr, ramWriteEnable, ramInputData, ramReadRequest, ramOutputData, ramDataReady);
 	
 datapath: process(clk)
 	begin
@@ -88,14 +105,25 @@ datapath: process(clk)
 			else
 				-- Clear write enable so it's only on for one clock cycle
 				regWriteEnable <= '0';
-				-- Clear loadImmNext so it's only on for one clock cycle
-				loadImmNext <= '0';
-				-- Writeback for the ALU, clear request line
+				ramWriteEnable <= '0';
+				-- Register writeback for the ALU, clear request line
 				if writeRequestAlu = '1' then
 					regWriteIndex <= writeAluRegister;
 					regWriteData <= aluResult;
 					regWriteEnable <= '1';
 					writeRequestAlu <= '0';				
+				end if;
+				if loadToReg = '1' and ramDataReady = '1' then
+					regWriteIndex <= loadTarget;
+					regWriteData <= ramOutputData;
+					regWriteEnable <= '1';
+					loadToReg <= '0';
+				end if;
+				if storeToMem = '1' then
+					ramWriteAddr <= storeAddress;
+					ramInputData <= regReadDataA;
+					ramWriteEnable <= '1';
+					storeToMem <= '0';
 				end if;
 				-- Increment PC, check for branch first
 				if pcBranch = '1' then
@@ -105,8 +133,8 @@ datapath: process(clk)
 					pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,1));
 				end if;
 
-				-- If last ins was a loadimm then we need to NOP for a cycle
-				if opcode = "0011" then
+				-- If last ins was a 2 byte then we need to NOP for a cycle
+				if opcode = "0011" or opcode = "0001" or opcode = "0010" then
 					opcode <= "0000";
 					operandA <= "00";
 					operandB <= "00";
@@ -160,11 +188,22 @@ datapath: process(clk)
 					regWriteIndex <= operandA;
 					regWriteData <= regReadDataA;
 					regWriteEnable <= '1';
-				-- Load immediate
+				-- Load immediate value into register
 				elsif opcode = "0011" then
 					regWriteIndex <= operandA;
 					regWriteData <= romData;
-					regWriteEnable <= '1';            
+					regWriteEnable <= '1';
+				-- Load value from memory into register
+				elsif opcode = "0001" then
+					ramReadAddr <= romData(6 downto 0);
+					ramReadRequest <= '1';
+					loadToReg <= '1';
+					loadTarget <= operandA;
+				-- Store value from register to memory 
+				elsif opcode = "0010" then
+					regReadIndexA <= operandA;
+					storeAddress <= romData(6 downto 0);
+					storeToMem <= '1';           
 				end if;
 			end if;      
 		end if;

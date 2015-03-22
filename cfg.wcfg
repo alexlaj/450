@@ -12,7 +12,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="28" />
+   <WVObjectSize size="29" />
    <wvobject fp_name="/cputest/clk" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -106,10 +106,6 @@
       <obj_property name="ObjectShortName">pc[6:0]</obj_property>
       <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/cputest/uut/operandsready" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">operandsready</obj_property>
-      <obj_property name="ObjectShortName">operandsready</obj_property>
-   </wvobject>
    <wvobject fp_name="/cputest/uut/operanda" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">operanda[1:0]</obj_property>
       <obj_property name="ObjectShortName">operanda[1:0]</obj_property>
@@ -117,10 +113,6 @@
    <wvobject fp_name="/cputest/uut/operandb" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">operandb[1:0]</obj_property>
       <obj_property name="ObjectShortName">operandb[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cputest/uut/writeoutport" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">writeoutport</obj_property>
-      <obj_property name="ObjectShortName">writeoutport</obj_property>
    </wvobject>
    <wvobject fp_name="/cputest/uut/alu/n" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">n</obj_property>
@@ -137,5 +129,17 @@
    <wvobject fp_name="/cputest/uut/subflag" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">subflag</obj_property>
       <obj_property name="ObjectShortName">subflag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/ram/writeen" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">writeen</obj_property>
+      <obj_property name="ObjectShortName">writeen</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/ramwriteenable" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">ramwriteenable</obj_property>
+      <obj_property name="ObjectShortName">ramwriteenable</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/ram/ramdata" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">ramdata[0:127]</obj_property>
+      <obj_property name="ObjectShortName">ramdata[0:127]</obj_property>
    </wvobject>
 </wave_config>
