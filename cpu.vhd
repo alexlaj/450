@@ -64,9 +64,8 @@ signal ramDataReady : std_ulogic := '0';
 
 -- Branch handling
 signal LR : std_ulogic_vector(6 downto 0) := (others => '0');
-signal pcBranch : std_ulogic := '0';
 signal subFlag : std_ulogic := '0';
-
+signal pcBranch : std_ulogic := '0';
 signal loadToReg : std_ulogic := '0';
 signal loadTarget : std_ulogic_vector(1 downto 0) := (others => '0');
 
@@ -106,34 +105,11 @@ datapath: process(clk)
 				-- Clear write enable so it's only on for one clock cycle
 				regWriteEnable <= '0';
 				ramWriteEnable <= '0';
-				-- Register writeback for the ALU, clear request line
-				if writeRequestAlu = '1' then
-					regWriteIndex <= writeAluRegister;
-					regWriteData <= aluResult;
-					regWriteEnable <= '1';
-					writeRequestAlu <= '0';				
-				end if;
-				if loadToReg = '1' and ramDataReady = '1' then
-					regWriteIndex <= loadTarget;
-					regWriteData <= ramOutputData;
-					regWriteEnable <= '1';
-					loadToReg <= '0';
-				end if;
-				if storeToMem = '1' then
-					ramWriteAddr <= storeAddress;
-					ramInputData <= regReadDataA;
-					ramWriteEnable <= '1';
-					storeToMem <= '0';
-				end if;
-				-- Increment PC, check for branch first
-				if pcBranch = '1' then
-					pc <= regReadDataB(6 downto 0);
-					pcBranch <= '0';
-				else
-					pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,1));
-				end if;
 
-				-- If last ins was a 2 byte then we need to NOP for a cycle
+				-- Increment PC, check for branch first
+				pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,1));
+
+				-- If last ins was a 2 byte or a branch then we need to NOP for a cycle
 				if opcode = "0011" or opcode = "0001" or opcode = "0010" then
 					opcode <= "0000";
 					operandA <= "00";
@@ -157,12 +133,14 @@ datapath: process(clk)
 				elsif opcode = "1001" then
 					-- Branch to operandB
 					if (operandA = "00") or (operandA = "01" and aluZero = '1') or (operandA = "10" and aluNegative = '1') then
-						pc <= regReadDataB(6 downto 0);             
+						pc <= regReadDataB(6 downto 0);
+						opcode <= "0000"; -- Set next opcode to 0 on sucessful branch             
 					-- Branch to subroutine at operandB
 					elsif operandA = "11" then
 						LR <= PC;
 						subFlag <= '1';
 						pc <= regReadDataB(6 downto 0);
+						opcode <= "0000"; -- Set next opcode to 0 on sucessful branch    
 					end if;
 				-- ALU instructions that use two registers
 				-- (add 0100, sub 0101, shift left 0110, shift right 0111, nand 1000)
@@ -186,7 +164,7 @@ datapath: process(clk)
 				-- Move data from one register to another
 				elsif opcode = "1101" then
 					regWriteIndex <= operandA;
-					regWriteData <= regReadDataA;
+					regWriteData <= regReadDataB;
 					regWriteEnable <= '1';
 				-- Load immediate value into register
 				elsif opcode = "0011" then
@@ -204,6 +182,28 @@ datapath: process(clk)
 					regReadIndexA <= operandA;
 					storeAddress <= romData(6 downto 0);
 					storeToMem <= '1';           
+				end if;
+
+				-- Register writeback for the ALU, clear request line
+				if writeRequestAlu = '1' then
+					regWriteIndex <= writeAluRegister;
+					regWriteData <= aluResult;
+					regWriteEnable <= '1';
+					writeRequestAlu <= '0';				
+				end if;
+				-- Storing memory value in register
+				if loadToReg = '1' and ramDataReady = '1' then
+					regWriteIndex <= loadTarget;
+					regWriteData <= ramOutputData;
+					regWriteEnable <= '1';
+					loadToReg <= '0';
+				end if;
+				-- Storing register value in memory
+				if storeToMem = '1' then
+					ramWriteAddr <= storeAddress;
+					ramInputData <= regReadDataA;
+					ramWriteEnable <= '1';
+					storeToMem <= '0';
 				end if;
 			end if;      
 		end if;

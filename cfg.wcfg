@@ -30,20 +30,6 @@
       <obj_property name="ObjectShortName">in_port[7:0]</obj_property>
       <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/cputest/out_port" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">out_port[7:0]</obj_property>
-      <obj_property name="ObjectShortName">out_port[7:0]</obj_property>
-      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cputest/uut/romdata" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">romdata[7:0]</obj_property>
-      <obj_property name="ObjectShortName">romdata[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cputest/uut/opcode" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">opcode[3:0]</obj_property>
-      <obj_property name="ObjectShortName">opcode[3:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
    <wvobject fp_name="/cputest/uut/alu/alu_mode" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">alu_mode[3:0]</obj_property>
       <obj_property name="ObjectShortName">alu_mode[3:0]</obj_property>
@@ -52,17 +38,17 @@
    <wvobject fp_name="/cputest/uut/alu/in_a" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">in_a[7:0]</obj_property>
       <obj_property name="ObjectShortName">in_a[7:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/cputest/uut/alu/in_b" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">in_b[7:0]</obj_property>
       <obj_property name="ObjectShortName">in_b[7:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/cputest/uut/alu/result" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">result[7:0]</obj_property>
       <obj_property name="ObjectShortName">result[7:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/cputest/uut/regwriteindex" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regwriteindex[1:0]</obj_property>
@@ -75,11 +61,6 @@
    <wvobject fp_name="/cputest/uut/regwriteenable" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">regwriteenable</obj_property>
       <obj_property name="ObjectShortName">regwriteenable</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cputest/uut/regfile/regfile" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">regfile[0:3]</obj_property>
-      <obj_property name="ObjectShortName">regfile[0:3]</obj_property>
-      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/cputest/uut/regreadindexa" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regreadindexa[1:0]</obj_property>
@@ -100,11 +81,6 @@
       <obj_property name="ElementShortName">rd_data_b[7:0]</obj_property>
       <obj_property name="ObjectShortName">rd_data_b[7:0]</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cputest/uut/pc" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">pc[6:0]</obj_property>
-      <obj_property name="ObjectShortName">pc[6:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/cputest/uut/operanda" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">operanda[1:0]</obj_property>
@@ -137,6 +113,50 @@
    <wvobject fp_name="/cputest/uut/ramwriteenable" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">ramwriteenable</obj_property>
       <obj_property name="ObjectShortName">ramwriteenable</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/romdata" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">romdata[7:0]</obj_property>
+      <obj_property name="ObjectShortName">romdata[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/out_port" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">out_port[7:0]</obj_property>
+      <obj_property name="ObjectShortName">out_port[7:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/regfile/regfile" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">regfile[0:3]</obj_property>
+      <obj_property name="ObjectShortName">regfile[0:3]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <wvobject fp_name="/cputest/uut/regfile/regfile[0]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[0]</obj_property>
+         <obj_property name="ObjectShortName">regfile[0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cputest/uut/regfile/regfile[1]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[1]</obj_property>
+         <obj_property name="ObjectShortName">regfile[1]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cputest/uut/regfile/regfile[2]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[2]</obj_property>
+         <obj_property name="ObjectShortName">regfile[2]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cputest/uut/regfile/regfile[3]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[3]</obj_property>
+         <obj_property name="ObjectShortName">regfile[3]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/pc" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pc[6:0]</obj_property>
+      <obj_property name="ObjectShortName">pc[6:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cputest/uut/opcode" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">opcode[3:0]</obj_property>
+      <obj_property name="ObjectShortName">opcode[3:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/cputest/uut/ram/ramdata" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">ramdata[0:127]</obj_property>
