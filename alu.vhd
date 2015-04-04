@@ -57,7 +57,7 @@ begin
           when "1000" => res := in_a nand in_b;
           when "0111" => res := std_ulogic_vector(shift_right(unsigned(in_a),1));
           when "0110" => res := std_ulogic_vector(shift_left(unsigned(in_a),1));
-          when others => res := "XXXXXXXX";
+          when others => res := "00000001";
         end case;
         if (to_integer(signed(res)) < 0) then
           n <= '1';

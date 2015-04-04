@@ -12,148 +12,134 @@ end imem;
 architecture BHV of imem is
     type ROM_TYPE is array (0 to 127) of std_ulogic_vector (7 downto 0);
     constant rom_content : ROM_TYPE := (
-
--- in this program, the loop will be executed 8 times, each time r0 is right shifted and r1 is left shifted
--- first 4 loops, output (add r0, r1), last 4 loops, output (nand r0,r1)
--- 1st loop: out 7F+FE = 01111101
--- 2nd loop: out 3F+FC = 00111000
--- 3rd loop: out 1F+F8 = 00010111
--- 4th loop: out 0F+F0 = 11111111
--- 5th loop: out 07 nand E0 = 11111111
--- 6th loop: out 03 nand C0 = 11111111
--- 7th loop: out 01 nand 80 = 11111111
--- 8th loop: out 00 nand 00 = 11111111
-
-
-
-00 =>   x"00", -- NOP
-01 =>   x"00", -- NOP
-02 =>	x"30", -- loadimm	r0,0F		#start#  
-03 =>	x"0F", -- 
-04 =>	x"00", -- NOP
-05 =>	x"00", -- NOP
-06 =>	x"00", -- NOP
-07 =>	x"00", -- NOP
-08 =>	x"00", -- NOP
-09 =>	x"20", -- store	 r0,add_nand
-10 =>	x"0F", -- 
-11 =>	x"30", -- loadimm	r0,7
-12 =>	x"07", -- 
-13 =>	x"00", -- NOP
-14 =>	x"00", -- NOP
-15 =>	x"00", -- NOP
-16 =>	x"00", -- NOP
-17 =>	x"00", -- NOP
-18 =>	x"20", -- store		r0,counter
-19 =>	x"0E", -- 
-20 =>	x"30", -- loadimm 	r0,FF
-21 =>	x"FF", -- 
-22 =>	x"34", -- loadimm		r1,FF
-23 =>	x"FF", -- 
-24 =>	x"00", -- NOP
-25 =>	x"00", -- NOP
-26 =>	x"00", -- NOP
-27 =>	x"00", -- NOP
-28 =>	x"00", -- NOP
-29 =>	x"70", -- shr		r0  		#loop# 
-30 =>	x"64", -- shl		r1
-31 =>	x"00", -- NOP
-32 =>	x"00", -- NOP
-33 =>	x"00", -- NOP
-34 =>	x"00", -- NOP
-35 =>	x"DC", -- mov		r3,r0 	
-36 =>	x"10", -- load		r0,add_nand
-37 =>	x"0F", -- 
-38 =>	x"00", -- NOP
-39 =>	x"00", -- NOP
-40 =>	x"00", -- NOP
-41 =>	x"00", -- NOP
-42 =>	x"00", -- NOP
-43 =>	x"70", -- shr		r0
-44 =>	x"00", -- NOP
-45 =>	x"00", -- NOP
-46 =>	x"00", -- NOP
-47 =>	x"00", -- NOP
-48 =>	x"00", -- NOP
-49 =>	x"20", -- store		r0,add_nand
-50 =>	x"0F", -- 
-51 =>	x"D3", -- mov		r0,r3	
-52 =>	x"00", -- NOP
-53 =>	x"00", -- NOP
-54 =>	x"00", -- NOP
-55 =>	x"00", -- NOP
-56 =>	x"00", -- NOP
-57 =>	x"00", -- NOP
-58 =>	x"38", -- loadimm		r2,nand
-59 =>	x"4B", -- 
-60 =>	x"00", -- NOP
-61 =>	x"00", -- NOP
-62 =>	x"00", -- NOP
-63 =>	x"00", -- NOP
-64 =>	x"96", -- brz		nand:
-65 =>	x"41", -- add		r0,r1
-66 =>	x"00", -- NOP   
-67 =>	x"38", -- loadimm	r2,out_add_nand
-68 =>	x"4C", -- 
-69 =>	x"00", -- NOP
-70 =>	x"00", -- NOP
-71 =>	x"00", -- NOP
-72 =>	x"00", -- NOP
-73 =>	x"00", -- NOP
-74 =>	x"92", -- br		out_add_nand
-75 =>	x"81", -- nand		r0,r1              #nand#
-76 =>	x"00", -- NOP    			   #out_add_nand# 
-77 =>	x"00", -- NOP
-78 =>	x"00", -- NOP
-79 =>	x"00", -- NOP
-80 =>	x"00", -- NOP
-81 =>	x"C0", -- out		r0
-82 =>	x"10", -- load		r0,counter
-83 =>	x"0E", -- 
-84 =>	x"D9", -- mov		r2,r1		
-85 =>	x"34", -- loadimm	r1,1
-86 =>	x"01", -- 
-87 =>	x"00", -- NOP
-88 =>	x"00", -- NOP
-89 =>	x"00", -- NOP
-90 =>	x"00", -- NOP
-91 =>	x"00", -- NOP
-92 =>	x"51", -- sub		r0,r1
-93 =>	x"00", -- NOP
-94 =>	x"00", -- NOP
-95 =>	x"00", -- NOP
-96 =>	x"00", -- NOP
-97 =>	x"00", -- NOP
-98 =>	x"20", -- store		r0,counter
-99 =>	x"0E", -- 
-100 =>	x"D6", -- mov		r1,r2	
-101 =>	x"38", -- loadimm		r2,out:
-102 =>	x"76", -- 
-103 =>	x"00", -- NOP
-104 =>	x"00", -- NOP
-105 =>	x"00", -- NOP
-106 =>	x"D3", -- mov		r0,r3	
-107 =>	x"00", -- NOP
-108 =>	x"00", -- NOP
-109 =>	x"9A", -- brn		out
-110 =>	x"38", -- loadimm		r2,loop
-111 =>	x"1D", -- 
-112 =>	x"00", -- NOP
-113 =>	x"00", -- NOP
-114 =>	x"00", -- NOP
-115 =>	x"00", -- NOP
-116 =>	x"00", -- NOP
-117 =>	x"92", -- br		loop
-118 =>	x"38", -- loadimm		r2,start     #out#
-119 =>	x"02", -- 
-120 =>	x"00", -- NOP
-121 =>	x"00", -- NOP
-122 =>	x"00", -- NOP
-123 =>	x"00", -- NOP
-124 =>	x"00", -- NOP
-125 =>	x"92", -- br		start
-126 =>	x"00", -- NOP
-127 =>	x"00" -- NOP
+    x"00", -- 1) 00000000 NOP
+    x"30", -- 2) 00110000 LOADIMM R0 0xC0 Shape for moving around
+    x"c0", -- 3) 11000000 0xc0
+    x"34", -- 4) 00110100 LOADIMM R1 0x06 Counter until branch to subsection
+    x"06", -- 5) 00000110 0x06
+    x"38", -- 6) 00111000 LOADIMM R2 0x01 To decrement counter
+    x"01", -- 7) 00000001 0x01
+    x"3c", -- 8) 00111100 LOADIMM R3 0xF0 Branching addresses
+    x"f0", -- 9) 11110000 0xf0
+    x"20", -- 10) 00100000 STORE R0 0x01
+    x"01", -- 11) 00000001 0x01
+    x"24", -- 12) 00100100 STORE R1 0x02
+    x"02", -- 13) 00000010 0x02
+    x"28", -- 14) 00101000 STORE R2 0x03
+    x"03", -- 15) 00000011 0x03
+    x"2c", -- 16) 00101100 STORE R3 0xF0
+    x"f0", -- 17) 11110000 0xf0
+    x"00", -- 18) 00000000 NOP
+    x"00", -- 19) 00000000 NOP
+    x"00", -- 20) 00000000 NOP For loop start
+    x"24", -- 21) 00100100 STORE R1 0x06
+    x"06", -- 22) 00000110 0x06
+    x"c0", -- 23) 11000000 OUT R0
+    x"1c", -- 24) 00011100 LOAD R3 0xF0
+    x"f0", -- 25) 11110000 0xf0
+    x"00", -- 26) 00000000 NOP
+    x"00", -- 27) 00000000 NOP
+    x"38", -- 28) 00111000 LOADIMM R2 0x03
+    x"03", -- 29) 00000011 0x03
+    x"00", -- 30) 00000000 NOP
+    x"56", -- 31) 01010110 SUB R1 R2 Sets negative flag in ALU if we've done 3 iterations
+    x"00", -- 32) 00000000 NOP
+    x"14", -- 33) 00010100 LOAD R1 0x06
+    x"06", -- 34) 00000110 0x06
+    x"00", -- 35) 00000000 NOP
+    x"38", -- 36) 00111000 LOADIMM R2 1
+    x"01", -- 37) 00000001 1
+    x"3c", -- 38) 00111100 LOADIMM R3 58 Branch past SHR
+    x"3a", -- 39) 00111010 58
+    x"00", -- 40) 00000000 NOP
+    x"00", -- 41) 00000000 NOP
+    x"97", -- 42) 10010111 BR.Z R3 If we have done 3 iterations shift left, else shift right
+    x"00", -- 43) 00000000 NOP
+    x"9b", -- 44) 10011011 BR.N R3
+    x"70", -- 45) 01110000 SHR R0
+    x"00", -- 46) 00000000 NOP
+    x"00", -- 47) 00000000 NOP
+    x"70", -- 48) 01110000 SHR R0
+    x"00", -- 49) 00000000 NOP
+    x"56", -- 50) 01010110 SUB R1 R2
+    x"00", -- 51) 00000000 NOP
+    x"3c", -- 52) 00111100 LOADIMM R3 19 Branch to beginning
+    x"13", -- 53) 00010011 19
+    x"00", -- 54) 00000000 NOP
+    x"00", -- 55) 00000000 NOP
+    x"93", -- 56) 10010011 BR R3
+    x"00", -- 57) 00000000 NOP
+    x"00", -- 58) 00000000 NOP
+    x"00", -- 59) 00000000 NOP
+    x"00", -- 60) 00000000 NOP
+    x"00", -- 61) 00000000 NOP
+    x"00", -- 62) 00000000 NOP
+    x"60", -- 63) 01100000 SHL R0
+    x"00", -- 64) 00000000 NOP
+    x"3c", -- 65) 00111100 LOADIMM R3 80
+    x"50", -- 66) 01010000 80
+    x"60", -- 67) 01100000 SHL R0
+    x"00", -- 68) 00000000 NOP
+    x"00", -- 69) 00000000 NOP
+    x"97", -- 70) 10010111 BR.Z R3 If the two bits have been shifted to 0 branch to next routine
+    x"56", -- 71) 01010110 SUB R1 R2
+    x"00", -- 72) 00000000 NOP
+    x"00", -- 73) 00000000 NOP
+    x"3c", -- 74) 00111100 LOADIMM R3 19 Branch to beginning
+    x"13", -- 75) 00010011 19
+    x"00", -- 76) 00000000 NOP
+    x"00", -- 77) 00000000 NOP
+    x"93", -- 78) 10010011 BR R3
+    x"00", -- 79) 00000000 NOP
+    x"00", -- 80) 00000000 NOP For loop is over now
+    x"00", -- 81) 00000000 NOP 
+    x"30", -- 82) 00110000 LOADIMM R0 0x80 Shape
+    x"80", -- 83) 10000000 0x80
+    x"34", -- 84) 00110100 LOADIMM R1 0xFF 
+    x"ff", -- 85) 11111111 0xff
+    x"38", -- 86) 00111000 LOADIMM R2 0x80 Add to shape
+    x"80", -- 87) 10000000 0x80
+    x"3c", -- 88) 00111100 LOADIMM R3 0x01 Branching address
+    x"01", -- 89) 00000001 0x01
+    x"c0", -- 90) 11000000 OUT R0
+    x"00", -- 91) 00000000 NOP
+    x"00", -- 92) 00000000 NOP
+    x"00", -- 93) 00000000 NOP
+    x"00", -- 94) 00000000 NOP
+    x"00", -- 95) 00000000 NOP
+    x"00", -- 96) 00000000 NOP
+    x"00", -- 97) 00000000 NOP
+    x"00", -- 98) 00000000 NOP
+    x"00", -- 99) 00000000 NOP
+    x"00", -- 100) 00000000 NOP
+    x"00", -- 101) 00000000 NOP
+    x"70", -- 102) 01110000 SHR R0
+    x"00", -- 103) 00000000 NOP
+    x"00", -- 104) 00000000 NOP
+    x"42", -- 105) 01000010 ADD R0 R2
+    x"00", -- 106) 00000000 NOP
+    x"00", -- 107) 00000000 NOP
+    x"c0", -- 108) 11000000 OUT R0
+    x"00", -- 109) 00000000 NOP
+    x"34", -- 110) 00110100 LOADIMM R1 0xFF
+    x"ff", -- 111) 11111111 0xff
+    x"00", -- 112) 00000000 NOP
+    x"00", -- 113) 00000000 NOP
+    x"54", -- 114) 01010100 SUB R1 R0
+    x"00", -- 115) 00000000 NOP
+    x"3c", -- 116) 00111100 LOADIMM R3 1
+    x"01", -- 117) 00000001 1
+    x"00", -- 118) 00000000 NOP
+    x"00", -- 119) 00000000 NOP
+    x"97", -- 120) 10010111 BR.Z R3
+    x"00", -- 121) 00000000 NOP
+    x"00", -- 122) 00000000 NOP
+    x"3c", -- 123) 00111100 LOADIMM R3 100
+    x"64", -- 124) 01100100 100
+    x"00", -- 125) 00000000 NOP
+    x"00", -- 126) 00000000 NOP
+    x"93", -- 127) 10010011 BR R3
+    others => x"00"
 );
 begin
 p1:    process (clk)

@@ -4,11 +4,13 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity cpu is
 Port (
-	clk : in std_ulogic;
+	fast_clk : in std_ulogic;
 	rst : in std_ulogic;
 	int : in std_ulogic; -- interrupt
 	in_port : in std_ulogic_vector(7 downto 0) := (others => '0');
-	out_port : out std_ulogic_vector(7 downto 0) := (others => '0')
+	out_port : out std_ulogic_vector(7 downto 0) := (others => '0');
+	sevenseg_enabled : out std_ulogic_vector(3 downto 0) := (others => '0');
+	sevenseg_segment : out std_ulogic_vector(7 downto 0) := (others => '0')	
 	);
 end cpu;
 
@@ -17,6 +19,8 @@ architecture Behavioral of cpu is
 -- ROM signals (ROM is 128 bytes and is byte addressable)
   -- Inputs
 signal pc : std_ulogic_vector(6 downto 0) := (others => '0'); -- ROM address
+signal clk : std_ulogic := '0'; -- ROM address
+signal clk_div_count : std_ulogic_vector(3 downto 0) := (others => '0'); -- ROM address
   -- Outputs
 signal romData : std_ulogic_vector(7 downto 0) := (others => '0'); -- Instruction from ROM
 -- romData breakdown signals
@@ -71,6 +75,11 @@ signal loadTarget : std_ulogic_vector(1 downto 0) := (others => '0');
 
 signal storeAddress : std_ulogic_vector(6 downto 0) := (others => '0');
 signal storeToMem : std_ulogic := '0';
+
+
+-- 7 segment display variables
+
+
 begin
 
 -- entity declarations for instantiations
@@ -78,13 +87,26 @@ rom : entity work.imem port map(clk, pc, romData);
 regfile : entity work.register_file port map(clk, regRst, regReadIndexA, regReadIndexB, regWriteIndex, regWriteEnable, regWriteData, regReadDataA, regReadDataB);
 alu : entity work.alu port map(clk, aluRst, aluMode, aluInputA, aluInputB, aluResult, aluNegative, aluZero);
 ram : entity work.ram port map(clk, ramReadAddr, ramWriteAddr, ramWriteEnable, ramInputData, ramReadRequest, ramOutputData, ramDataReady);
-	
-datapath: process(clk)
+display : entity work.display port map(pc, sevenseg_enabled, sevenseg_segment, fast_clk, rst);
+
+datapath: process(fast_clk)
 	begin
+		if rising_edge(fast_clk) then
+			if rst = '1' then
+				clk_div_count <= "0001";
+				clk <= '0';
+			else
+				clk_div_count <= clk_div_count(2 downto 0) & clk_div_count(3);
+				if clk_div_count(3) = '1' then
+					clk <= not clk;
+				end if;
+			end if;
+		end if;
 		if rising_edge(clk) then
 			if rst = '1' then
 				-- Reset system
 				pc <= "0000000";
+
 				out_port <= "00000000";
 				regRst <= '1';
 				aluRst <= '1';

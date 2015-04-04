@@ -1,11 +1,104 @@
 NOP
+LOADIMM R0 0xC0 Shape for moving around
+LOADIMM R1 0x06 Counter until branch to subsection
+LOADIMM R2 0x01 To decrement counter
+LOADIMM R3 0xF0 Branching addresses
+STORE R0 0x01
+STORE R1 0x02
+STORE R2 0x03
+STORE R3 0xF0
 NOP
 NOP
-IN R0
-IN R1
-IN R2
-IN R3
+NOP For loop start
+STORE R1 0x06
+OUT R0
+LOAD R3 0xF0
+NOP
+NOP
+LOADIMM R2 0x03
+NOP
+SUB R1 R2 Sets negative flag in ALU if we've done 3 iterations
+NOP
+LOAD R1 0x06
+NOP
+LOADIMM R2 1
+LOADIMM R3 58 Branch past SHR
+NOP
+NOP
+BR.Z R3 If we have done 3 iterations shift left, else shift right
+NOP
+BR.N R3
+SHR R0
+NOP
+NOP
+SHR R0
+NOP
+SUB R1 R2
+NOP
+LOADIMM R3 19 Branch to beginning
+NOP
+NOP
+BR R3
 NOP
 NOP
 NOP
-ADD R1, R2
+NOP
+NOP
+NOP
+SHL R0
+NOP
+LOADIMM R3 80
+SHL R0
+NOP
+NOP
+BR.Z R3 If the two bits have been shifted to 0 branch to next routine
+SUB R1 R2
+NOP
+NOP
+LOADIMM R3 19 Branch to beginning
+NOP
+NOP
+BR R3
+NOP
+NOP For loop is over now
+NOP 
+LOADIMM R0 0x80 Shape
+LOADIMM R1 0xFF 
+LOADIMM R2 0x80 Add to shape
+LOADIMM R3 0x01 Branching address
+OUT R0
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+NOP
+SHR R0
+NOP
+NOP
+ADD R0 R2
+NOP
+NOP
+OUT R0
+NOP
+LOADIMM R1 0xFF
+NOP
+NOP
+SUB R1 R0
+NOP
+LOADIMM R3 1
+NOP
+NOP
+BR.Z R3
+NOP
+NOP
+LOADIMM R3 100
+NOP
+NOP
+BR R3
+
